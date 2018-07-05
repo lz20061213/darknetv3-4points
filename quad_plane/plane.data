@@ -1,0 +1,8 @@
+classes= 1
+train  = /home/yangruyin/data/PLANE/darknetv3/trainval.txt
+valid = /home/yangruyin/data/PLANE/darknetv3/test.txt
+names = quad_plane/plane.names
+backup = /home/yangruyin/codes/darknetv3-4points/backup/plane
+
+testlist = /home/yangruyin/data/PLANE/darknetv3/test.txt
+outfolder = predicts

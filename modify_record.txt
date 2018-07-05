@@ -1,0 +1,20 @@
+2018/6/12
+1. read the detector.c file and change the input of original
+
+1) line 26, where we need to modify the .cfg file to get +8 output
+   change filters= n*(classes + 4 + 1) to filters= n * (classes + 12 + 1)
+2) line 58, the data collection process
+   darknet.h
+     add a poly struct
+     modify data struct, change box to poly
+     add a poly_label struct
+
+   data.c
+     d.y = make_matrix(n, 13*boxes)
+     change fill_truth_detection() function
+        poly_label *polys = read_polys(labelpath, &count);
+        randomize_polys(polys, count);
+        correct_polys(polys, count, dx, dy, sx, sy, flip);
+            add reorder_poly function, to reorder the points when flip
+
+
