@@ -648,7 +648,7 @@ void fill_truth_detection(char *path, int num_boxes, float *truth, int classes, 
         truth[(i - sub) * 13 + 11] = py4;
         truth[(i - sub) * 13 + 12] = id;
 
-//        printf("truth in fill_truth_detection: %f %f %f %f %f %f %f %f\n", px1, py1, px2, py2,
+//        printf("truth in fill_truth_detection: %f %f %f %f; %f %f %f %f %f %f %f %f\n", x, y, w, h, px1, py1, px2, py2,
 //               px3, py3, px4, py4);
 
     }
@@ -1187,7 +1187,7 @@ data load_data_detection(int n, char **paths, int m, int w, int h, int boxes, in
         float dx = rand_uniform(0, w - nw);
         float dy = rand_uniform(0, h - nh);
 
-        //printf("%f, %f, %f, %f\n", nw, nh, dx, dy);
+//        printf("%f, %f, %f, %f\n", nw, nh, dx, dy);
 
         place_image(orig, nw, nh, dx, dy, sized);
 

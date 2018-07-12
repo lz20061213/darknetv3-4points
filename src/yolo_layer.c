@@ -106,14 +106,14 @@ poly get_yolo_poly(float *x, float *biases, int n, int index, int i, int j, int 
     cpy3 = p.y;
     cpx4 = p.x;
     cpy4 = p.y + p.h / 2;
-    p.px1 = cpx1 + x[index + 4 * stride] * p.w;
-    p.py1 = cpy1 + x[index + 5 * stride] * p.h;
-    p.px2 = cpx2 + x[index + 6 * stride] * p.w;
-    p.py2 = cpy2 + x[index + 7 * stride] * p.h;
-    p.px3 = cpx3 + x[index + 8 * stride] * p.w;
-    p.py3 = cpy3 + x[index + 9 * stride] * p.h;
-    p.px4 = cpx4 + x[index + 10 * stride] * p.w;
-    p.py4 = cpy4 + x[index + 11 * stride] * p.h;
+    p.px1 = cpx1;
+    p.py1 = cpy1 + x[index + 5 * stride] * p.h / 2;
+    p.px2 = cpx2 + x[index + 6 * stride] * p.w / 2;
+    p.py2 = cpy2;
+    p.px3 = cpx3;
+    p.py3 = cpy3 + x[index + 9 * stride] * p.h / 2;
+    p.px4 = cpx4 + x[index + 10 * stride] * p.w / 2;
+    p.py4 = cpy4;
 
     //printf("predict: %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n", p.x, p.y, p.w, p.h, p.px1, p.py1, p.px2, p.py2, p.px3, p.py3, p.px4, p.py4);
     return p;
@@ -144,44 +144,47 @@ float delta_yolo_poly(poly truth, float *x, float *biases, int n, int index, int
 //    printf("%f\n", iou);
 //    printf("trutu in yolo: %f %f %f %f %f %f %f %f\n", truth.px1, truth.py1, truth.px2, truth.py2,
 //           truth.px3, truth.py3, truth.px4, truth.py4);
-
-    printf("scale: %f\n", scale);
+//    printf("some thing: %f, %f, %d, %d, %f, %f, %d, %d, %f, %f\n", truth.x, truth.y, lw, lh, truth.w, truth.h, w, h, biases[2 * n], biases[2 * n + 1]);
 
     float tx = (truth.x * lw - i);
     float ty = (truth.y * lh - j);
     float tw = log(truth.w * w / biases[2 * n]);
     float th = log(truth.h * h / biases[2 * n + 1]);
     float cpx1, cpy1, cpx2, cpy2, cpx3, cpy3, cpx4, cpy4;
-    cpx1 = truth.x - truth.w / 2;
+    cpx1 = truth.x - truth.w / 2; // fixed
     cpy1 = truth.y;
     cpx2 = truth.x;
-    cpy2 = truth.y - truth.h / 2;
-    cpx3 = truth.x + truth.w / 2;
+    cpy2 = truth.y - truth.h / 2; // fixed
+    cpx3 = truth.x + truth.w / 2;  // fixed
     cpy3 = truth.y;
     cpx4 = truth.x;
-    cpy4 = truth.y + truth.h / 2;
+    cpy4 = truth.y + truth.h / 2;  // fixed
 
-    float tpx1 = (truth.px1 - cpx1) / truth.w;
-    float tpy1 = (truth.py1 - cpy1) / truth.h;
-    float tpx2 = (truth.px2 - cpx2) / truth.w;
-    float tpy2 = (truth.py2 - cpy2) / truth.h;
-    float tpx3 = (truth.px3 - cpx3) / truth.w;
-    float tpy3 = (truth.py3 - cpy3) / truth.h;
-    float tpx4 = (truth.px4 - cpx4) / truth.w;
-    float tpy4 = (truth.py4 - cpy4) / truth.h;
+    //printf("center anchor: %f, %f, %f, %f, %f, %f, %f, %f\n", cpx1, cpy1, cpx2, cpy2, cpx3, cpy3, cpx4, cpy4);
+
+    float tpx1 = (truth.px1 - cpx1) / truth.w * 2;
+    float tpy1 = (truth.py1 - cpy1) / truth.h * 2;
+    float tpx2 = (truth.px2 - cpx2) / truth.w * 2;
+    float tpy2 = (truth.py2 - cpy2) / truth.h * 2;
+    float tpx3 = (truth.px3 - cpx3) / truth.w * 2;
+    float tpy3 = (truth.py3 - cpy3) / truth.h * 2;
+    float tpx4 = (truth.px4 - cpx4) / truth.w * 2;
+    float tpy4 = (truth.py4 - cpy4) / truth.h * 2;
+
+    //printf("predict: %f, %f, %f, %f, %f, %f, %f, %f\n", tpx1, tpy1, tpx2, tpy2, tpx3, tpy3, tpx4, tpy4);
 
     delta[index + 0 * stride] = scale * (tx - x[index + 0 * stride]);
     delta[index + 1 * stride] = scale * (ty - x[index + 1 * stride]);
     delta[index + 2 * stride] = scale * (tw - x[index + 2 * stride]);
     delta[index + 3 * stride] = scale * (th - x[index + 3 * stride]);
-    delta[index + 4 * stride] = scale * (tpx1 - x[index + 4 * stride]);
+    delta[index + 4 * stride] = 0;
     delta[index + 5 * stride] = scale * (tpy1 - x[index + 5 * stride]);
     delta[index + 6 * stride] = scale * (tpx2 - x[index + 6 * stride]);
-    delta[index + 7 * stride] = scale * (tpy2 - x[index + 7 * stride]);
-    delta[index + 8 * stride] = scale * (tpx3 - x[index + 8 * stride]);
+    delta[index + 7 * stride] = 0;
+    delta[index + 8 * stride] = 0;
     delta[index + 9 * stride] = scale * (tpy3 - x[index + 9 * stride]);
     delta[index + 10 * stride] = scale * (tpx4 - x[index + 10 * stride]);
-    delta[index + 11 * stride] = scale * (tpy4 - x[index + 11 * stride]);
+    delta[index + 11 * stride] = 0;
 
     return iou;
 }
