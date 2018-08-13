@@ -289,6 +289,7 @@ int *parse_yolo_mask(char *a, int *num) {
         for (i = 0; i < len; ++i) {
             if (a[i] == ',') ++n;
         }
+//        printf("yolo_layer n: %d\n", n);
         mask = calloc(n, sizeof(int));
         for (i = 0; i < n; ++i) {
             int val = atoi(a);
@@ -328,11 +329,14 @@ layer parse_yolo(list *options, size_params params) {
         for (i = 0; i < len; ++i) {
             if (a[i] == ',') ++n;
         }
+        printf("anchor: ");
         for (i = 0; i < n; ++i) {
             float bias = atof(a);
             l.biases[i] = bias;
             a = strchr(a, ',') + 1;
+            printf("%f ", bias);
         }
+        printf("\n");
     }
     return l;
 }
